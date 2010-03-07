@@ -4,6 +4,7 @@ from django.utils.datastructures import SortedDict
 from django.db import transaction
 from django.core.cache import cache
 
+from dbsettings.utils import get_app_label
 from dbsettings.models import Setting
 
 __all__ = ['get_all_settings', 'get_setting', 'get_setting_storage',
@@ -35,7 +36,7 @@ def get_all_settings():
     return list(_settings)
 
 def get_app_settings(app_label):
-    return [p for p in _settings if app_label == p.module_name.split('.')[-2]]
+    return [p for p in _settings if app_label == get_app_label(p.module_name)]
 
 def get_setting(module_name, class_name, attribute_name):
     return _settings[module_name, class_name, attribute_name]

@@ -5,6 +5,7 @@ from django import forms
 from django.utils.datastructures import SortedDict
 from django.utils.text import capfirst
 from dbsettings.loading import get_setting_storage
+from dbsettings.utils import get_app_label
 
 re_field_name = re.compile(r'^(.+)__(.*)__(.+)$')
 
@@ -24,7 +25,7 @@ class SettingsEditor(forms.BaseForm):
         field.label = capfirst(field.label)
         module_name, class_name, x = re_field_name.match(field.name).groups()
 
-        app_label = module_name.split('.')[-2];
+        app_label = get_app_label(module_name);
         field.module_name = app_label
 
         if class_name:
@@ -54,7 +55,7 @@ def customized_editor(user, settings):
     base_fields = SortedDict()
     for setting in settings:
         perm = '%s.can_edit_%s_settings' % (
-            setting.module_name.split('.')[-2],
+            get_app_label(setting.module_name),
             setting.class_name.lower()
         )
         if user.has_perm(perm):
